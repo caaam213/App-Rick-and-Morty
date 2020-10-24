@@ -1,12 +1,17 @@
 package com.example.api_app;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -27,14 +32,29 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Personnage> liste = new ArrayList<>();
     private ArrayList<Personnage> listeFav = new ArrayList<>();
-    private Switch mySwitch;
+    private ArrayList<Personnage> listeDead = new ArrayList<>();
+    private ArrayList<Personnage> listeAlive= new ArrayList<>();
+    private Menu menu;
+    private boolean checked = false;
+    private boolean deadChecked = false;
+    private boolean aliveChecked = false;
     MyAdapter adapter;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mySwitch = findViewById(R.id.switch2);
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        this.menu = menu;
+        inflater.inflate(R.menu.menu_fav,menu);
+
         final ListView listePerso = findViewById(R.id.listview);
 
         if(listeFav.size()==0)
@@ -44,17 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
         adapter = new MyAdapter(MainActivity.this, liste);
 
-        if(mySwitch.isChecked())
-        {
-            recupTabFavori();
-            adapter.setList(listeFav);
-        }
-        else
-        {
-            
-
-            new MyAsyncTask().execute(liste,adapter);
-        }
+        new MyAsyncTask().execute(liste,adapter);
 
         listePerso.setAdapter(adapter);
 
@@ -72,23 +82,74 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        final ListView listePerso = findViewById(R.id.listview);
+        switch (item.getItemId())
+        {
+            case R.id.item1:
+                if(checked)
+                {
+                    menu.getItem(0).setIcon(ContextCompat.getDrawable(this, R.drawable.ic_baseline_star_border_24));
+                    checked = false;
+                    adapter.setList(liste);
+                }
+                else
+                {
+                    menu.getItem(0).setIcon(ContextCompat.getDrawable(this, R.drawable.ic_baseline_star_24));
+                    checked = true;
                     recupTabFavori();
+
                     adapter.setList(listeFav);
+
+                }
+                adapter.notifyDataSetChanged();
+                break;
+            case R.id.item3:
+                if(deadChecked)
+                {
+                    menu.getItem(1).setChecked(true);
+                    new RecupDeadCharacters().execute(listeDead,adapter);
+                    listePerso.setAdapter(adapter);
+                    deadChecked = false;
+                    menu.getItem(2).setChecked(false);
 
                 }
                 else
                 {
-                    adapter.setList(liste);
+                    menu.getItem(1).setChecked(false);
+                    new MyAsyncTask().execute(liste,adapter);;
+                    listePerso.setAdapter(adapter);
+                    deadChecked = true;
                 }
+                break;
 
-                adapter.notifyDataSetChanged();
-            }
-        });
+            case R.id.item4:
+                if(aliveChecked)
+                {
+                    menu.getItem(2).setChecked(true);
+                    new RecupAliveCharacters().execute(listeAlive,adapter);
+                    listePerso.setAdapter(adapter);
+                    aliveChecked = false;
+                    menu.getItem(1).setChecked(false);
 
+                }
+                else
+                {
+                    menu.getItem(2).setChecked(false);
+                    new MyAsyncTask().execute(liste,adapter);
+                    listePerso.setAdapter(adapter);
+                    aliveChecked = true;
+                }
+                break;
+
+
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 
