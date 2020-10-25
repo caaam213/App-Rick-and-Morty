@@ -1,0 +1,6 @@
+Modifications apportées depuis le 20 octobre : 
+*Splashscreen  
+*Recycler View pour la liste des personnages
+*Ajout d'un menu d'action et d'item permettant de filtrer les personnages selon s'ils sont morts ou vivants
+*Amélioration du design de l'appli (Ajout des couleurs etc...)
+*Gestion de l'affichage de la liste des épisodes

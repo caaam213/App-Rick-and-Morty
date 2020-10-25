@@ -1,29 +1,23 @@
 package com.example.api_app;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.util.Log;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 
 
-public class MyAdapter extends BaseAdapter {
+public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     Context context;
     ArrayList<Personnage> listePerso;
 
@@ -37,49 +31,54 @@ public class MyAdapter extends BaseAdapter {
         this.listePerso = liste;
     }
 
-    public ArrayList<Personnage> getListePerso() {
-        return listePerso;
+    @NonNull
+    @Override
+    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View view = inflater.inflate(R.layout.my_row,parent,false);
+        return new MyViewHolder(view);
     }
 
     @Override
-    public int getCount() {
+    public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
+        holder.tv1.setText(listePerso.get(position).getNomPerso());
+        holder.tv2.setText(listePerso.get(position).getSpecies());
+        String imageUrl = listePerso.get(position).getImage();
+        Picasso.get().load(imageUrl).into(holder.image);
+        holder.mainLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent1 = new Intent(context,InformationActivity.class);
+                Personnage perso = (Personnage) listePerso.get(position);
+                intent1.putExtra("Perso selec", perso);
+                context.startActivity(intent1);
+            }
+        });
+    }
+
+    @Override
+    public int getItemCount() {
         return listePerso.size();
     }
 
-    @Override
-    public Object getItem(int i) {
-        return listePerso.get(i);
-    }
+    public class MyViewHolder extends RecyclerView.ViewHolder{
+        TextView tv1,tv2;
+        ImageView image;
+        ConstraintLayout mainLayout;
+        public MyViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tv1 = itemView.findViewById(R.id.name);
+            tv2 = itemView.findViewById(R.id.species);
+            image = itemView.findViewById(R.id.imageV);
+            mainLayout = itemView.findViewById(R.id.mainLayout);
 
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @NonNull
-    @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-
-        LayoutInflater layoutInflater = (LayoutInflater) context.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View row = layoutInflater.inflate(R.layout.row, parent, false);
-        TextView tv = row.findViewById(R.id.textView);
-        ImageView image = row.findViewById(R.id.imageView);
-
-
-        tv.setText(listePerso.get(position).getNomPerso());
-        String imageUrl = listePerso.get(position).getImage();
-        Picasso.get().load(imageUrl).into(image);
-
-
-
-
-        return row;
+        }
     }
 
 
 
 
-    }
+}
 
 
 

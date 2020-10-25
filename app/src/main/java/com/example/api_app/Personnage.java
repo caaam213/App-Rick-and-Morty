@@ -13,9 +13,10 @@ public class Personnage implements Serializable {
     String location;
     String image;
     ArrayList<Integer> episodes;
+    String origin;
 
 
-    public Personnage(int id, String nomPerso, String status, String species, String type, String gender, String location, String image, ArrayList<Integer> episodes) {
+    public Personnage(int id, String nomPerso, String status, String species, String type, String gender, String location, String image, ArrayList<Integer> episodes,String origin) {
         this.id = id;
         this.nomPerso = nomPerso;
         this.status = status;
@@ -25,11 +26,20 @@ public class Personnage implements Serializable {
         this.location = location;
         this.image = image;
         this.episodes = episodes;
+        this.origin = origin;
     }
 
     public Personnage(String nomPerso, String image) {
         this.nomPerso = nomPerso;
         this.image = image;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
 
     public int getId() {
@@ -103,4 +113,5 @@ public class Personnage implements Serializable {
     public void setEpisodes(ArrayList<Integer> episodes) {
         this.episodes = episodes;
     }
+
 }

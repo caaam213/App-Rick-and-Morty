@@ -62,6 +62,7 @@ public class MyAsyncTask extends AsyncTask<Object,Void,MyAdapter> {
                         String type = unPerso.getString("type");
                         String gender = unPerso.getString("gender");
                         String location = unPerso.getJSONObject("location").getString("name");
+                        String origin = unPerso.getJSONObject("origin").getString("name");
                         String urlImage = unPerso.getString("image");
                         JSONArray tabEpisodes = unPerso.getJSONArray("episode");
 
@@ -76,7 +77,7 @@ public class MyAsyncTask extends AsyncTask<Object,Void,MyAdapter> {
                             }
                         }
 
-                        Personnage perso = new Personnage(id,name,status,species,type,gender,location,urlImage,list);
+                        Personnage perso = new Personnage(id,name,status,species,type,gender,location,urlImage,list,origin);
                         Log.d("image", perso.getImage());
                         Log.d("nom", perso.getNomPerso());
 

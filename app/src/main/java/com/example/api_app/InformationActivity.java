@@ -1,19 +1,14 @@
 package com.example.api_app;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.squareup.picasso.Picasso;
@@ -22,11 +17,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.net.URL;
 import java.util.ArrayList;
 
 public class InformationActivity extends AppCompatActivity{
@@ -57,23 +49,44 @@ public class InformationActivity extends AppCompatActivity{
     {
         TextView nP = findViewById(R.id.nomPerso);
         TextView sta = findViewById(R.id.status);
-        TextView spe = findViewById(R.id.species);
-        TextView gen = findViewById(R.id.gender);
         TextView loc = findViewById(R.id.location);
-        TextView ep = findViewById(R.id.episodes);
+        TextView gen = findViewById(R.id.gender);
+        TextView ori = findViewById(R.id.origin);
         ImageView iV = findViewById(R.id.im);
 
+
         nP.setText(perso.getNomPerso());
+
         sta.setText(perso.getStatus());
-        spe.setText(perso.getSpecies());
-        gen.setText(perso.getGender());
+        if(perso.getStatus().equals("Alive"))
+        {
+            sta.setTextColor(Color.GREEN);
+        }
+        else if(perso.getStatus().equals("Dead"))
+        {
+            sta.setTextColor(Color.RED);
+        }
         loc.setText(perso.getLocation());
-        ep.setText(Integer.toString(perso.getEpisodes().size()));
+        gen.setText(perso.getGender());
+        if(perso.getGender().equals("Male"))
+        {
+            gen.setTextColor(Color.BLUE);
+        }
+        else if(perso.getGender().equals("Female"))
+        {
+            gen.setTextColor(Color.rgb(255,192,203));
+        }
+        ori.setText(perso.getOrigin());
         Picasso.get().load(perso.getImage()).into(iV);
 
     }
 
-
+    public void voirListe(View view)
+    {
+        Intent intent = new Intent(InformationActivity.this,listeEpisodes.class);
+        intent.putExtra("liste", perso);
+        startActivity(intent);
+    }
 
 
     public void fav(View view)
@@ -119,14 +132,14 @@ public class InformationActivity extends AppCompatActivity{
     {
 
         File directory = this.getFilesDir();
-        File file = new File(directory, "listeFavori");
+        File file = new File(directory, "listeFavori2");
 
 
         if(file.exists()) {
             FileInputStream fis = null;
             ObjectInputStream in = null;
             try {
-                fis = openFileInput("listeFavori");
+                fis = openFileInput("listeFavori2");
                 in = new ObjectInputStream(fis);
                 persoFav = (ArrayList<Personnage>) in.readObject();
 
@@ -149,11 +162,11 @@ public class InformationActivity extends AppCompatActivity{
         ObjectOutputStream out = null;
 
         File directory = this.getFilesDir();
-        File file = new File(directory, "listeFavori");
+        File file = new File(directory, "listeFavori2");
 
         try {
             assert fos != null;
-            fos = openFileOutput("listeFavori", Context.MODE_PRIVATE);
+            fos = openFileOutput("listeFavori2", Context.MODE_PRIVATE);
             out = new ObjectOutputStream(fos);
             out.writeObject(persoFav);
             out.flush();

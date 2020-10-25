@@ -64,6 +64,7 @@ public class RecupDeadCharacters extends AsyncTask<Object,Void,MyAdapter> {
                         String gender = unPerso.getString("gender");
                         String location = unPerso.getJSONObject("location").getString("name");
                         String urlImage = unPerso.getString("image");
+                        String origin = unPerso.getJSONObject("origin").getString("name");
                         JSONArray tabEpisodes = unPerso.getJSONArray("episode");
 
                         ArrayList<Integer> list = new ArrayList();
@@ -77,7 +78,7 @@ public class RecupDeadCharacters extends AsyncTask<Object,Void,MyAdapter> {
                             }
                         }
 
-                        Personnage perso = new Personnage(id,name,status,species,type,gender,location,urlImage,list);
+                        Personnage perso = new Personnage(id,name,status,species,type,gender,location,urlImage,list,origin);
                         Log.d("image", perso.getImage());
                         Log.d("nom", perso.getNomPerso());
 

@@ -3,6 +3,8 @@ package com.example.api_app;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -27,7 +29,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-
+//TODO:LOAD ON SCROLL
 public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Personnage> liste = new ArrayList<>();
@@ -54,8 +56,9 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         this.menu = menu;
         inflater.inflate(R.menu.menu_fav,menu);
-
-        final ListView listePerso = findViewById(R.id.listview);
+        menu.getItem(1).setChecked(false);
+        menu.getItem(2).setChecked(false);
+        final RecyclerView listePerso = findViewById(R.id.recyclerView);
 
         if(listeFav.size()==0)
         {
@@ -65,29 +68,15 @@ public class MainActivity extends AppCompatActivity {
         adapter = new MyAdapter(MainActivity.this, liste);
 
         new MyAsyncTask().execute(liste,adapter);
-
         listePerso.setAdapter(adapter);
-
-
-
-
-        listePerso.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent1 = new Intent(MainActivity.this,InformationActivity.class);
-                Personnage perso = (Personnage) listePerso.getItemAtPosition(i);
-                intent1.putExtra("Perso selec", perso);
-                startActivity(intent1);
-
-            }
-        });
+        listePerso.setLayoutManager(new LinearLayoutManager(MainActivity.this));
 
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        final ListView listePerso = findViewById(R.id.listview);
+        final RecyclerView listePerso = findViewById(R.id.recyclerView);
         switch (item.getItemId())
         {
             case R.id.item1:
@@ -109,40 +98,45 @@ public class MainActivity extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
                 break;
             case R.id.item3:
+                liste.clear();
                 if(deadChecked)
+                {
+                    menu.getItem(1).setChecked(false);
+                    new MyAsyncTask().execute(liste,adapter);
+                    listePerso.setAdapter(adapter);
+                    deadChecked = false;
+
+                }
+                else
                 {
                     menu.getItem(1).setChecked(true);
                     new RecupDeadCharacters().execute(listeDead,adapter);
                     listePerso.setAdapter(adapter);
-                    deadChecked = false;
+                    deadChecked = true;
                     menu.getItem(2).setChecked(false);
 
-                }
-                else
-                {
-                    menu.getItem(1).setChecked(false);
-                    new MyAsyncTask().execute(liste,adapter);;
-                    listePerso.setAdapter(adapter);
-                    deadChecked = true;
                 }
                 break;
 
             case R.id.item4:
+                liste.clear();
                 if(aliveChecked)
-                {
-                    menu.getItem(2).setChecked(true);
-                    new RecupAliveCharacters().execute(listeAlive,adapter);
-                    listePerso.setAdapter(adapter);
-                    aliveChecked = false;
-                    menu.getItem(1).setChecked(false);
-
-                }
-                else
                 {
                     menu.getItem(2).setChecked(false);
                     new MyAsyncTask().execute(liste,adapter);
                     listePerso.setAdapter(adapter);
+                    aliveChecked = false;
+
+
+
+                }
+                else
+                {
+                    menu.getItem(2).setChecked(true);
+                    new RecupAliveCharacters().execute(listeAlive,adapter);
+                    listePerso.setAdapter(adapter);
                     aliveChecked = true;
+                    menu.getItem(1).setChecked(false);
                 }
                 break;
 
@@ -160,13 +154,13 @@ public class MainActivity extends AppCompatActivity {
         ObjectOutputStream out = null;
 
         File directory = this.getFilesDir();
-        File file = new File(directory, "listePerso");
+        File file = new File(directory, "listePerso2");
 
         if (liste.size() != 0)
 
                 try {
                     assert fos != null;
-                    fos = openFileOutput("listePerso", Context.MODE_PRIVATE);
+                    fos = openFileOutput("listePerso2", Context.MODE_PRIVATE);
                     out = new ObjectOutputStream(fos);
                     out.writeObject(liste);
                 } catch (IOException e) {
@@ -184,12 +178,12 @@ public class MainActivity extends AppCompatActivity {
         private void recupTab()
         {
             File directory = this.getFilesDir();
-            File file = new File(directory, "listePerso");
+            File file = new File(directory, "listePerso2");
             if(file.exists()) {
                 FileInputStream fis = null;
                 ObjectInputStream in = null;
                 try {
-                    fis = openFileInput("listePerso");
+                    fis = openFileInput("listePerso2");
                     in = new ObjectInputStream(fis);
                     liste = (ArrayList<Personnage>) in.readObject();
                 } catch (Exception e) {
@@ -211,14 +205,14 @@ public class MainActivity extends AppCompatActivity {
         public void recupTabFavori()
         {
             File directory = this.getFilesDir();
-            File file = new File(directory, "listeFavori");
+            File file = new File(directory, "listeFavori2");
 
 
             if(file.exists()) {
                 FileInputStream fis = null;
                 ObjectInputStream in = null;
                 try {
-                    fis = openFileInput("listeFavori");
+                    fis = openFileInput("listeFavori2");
                     in = new ObjectInputStream(fis);
                     listeFav = (ArrayList<Personnage>) in.readObject();
 
